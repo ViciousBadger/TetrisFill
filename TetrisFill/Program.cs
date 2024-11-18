@@ -6,11 +6,6 @@ using TetrisFill;
 
 Console.WriteLine("Hello, World!");
 
-bool[,] fuck =
-{
-    { true, true },
-    { true, true }
-};
 var chunkRegistry = new List<Chunk>(
     [
         new Chunk
@@ -82,7 +77,7 @@ var chunkRegistry = new List<Chunk>(
 );
 
 var map = new Map();
-Random rand = new Random();
+var rand = new Random();
 
 foreach (var placeX in Enumerable.Range(0, 8))
 {
