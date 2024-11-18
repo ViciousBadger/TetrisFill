@@ -104,12 +104,30 @@ var chunkRegistry = new List<Chunk>(
 var map = new Map();
 var rand = new Random();
 
-var spiral = new SpiralWalker(new(0, 0), 8);
+var spiral = new SpiralWalker(new(0, 0), 14);
+
+var biomeNoise = new FastNoiseLite(rand.Next());
+biomeNoise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
+biomeNoise.SetFrequency(0.08f);
 
 Console.Clear();
 foreach (var placeTarget in spiral)
 {
-    var fits = map.GetFittingPlacementsForAllChunks(chunkRegistry, placeTarget);
+    var biome = Biome.Green;
+    var noiseSample = biomeNoise.GetNoise(placeTarget.X, placeTarget.Z);
+    if (noiseSample > 0.4)
+    {
+        biome = Biome.Red;
+    }
+    else if (noiseSample < -0.4)
+    {
+        biome = Biome.Blue;
+    }
+
+    var fits = map.GetFittingPlacementsForChunks(
+        chunkRegistry.Where(chunk => chunk.Biome == biome),
+        placeTarget
+    );
     if (fits.Count > 0)
     {
         var selected = fits[rand.Next() % fits.Count];
@@ -117,14 +135,13 @@ foreach (var placeTarget in spiral)
     }
 
     DrawSymbol(placeTarget, 'T', ConsoleColor.Magenta);
-    Thread.Sleep(20);
+    Thread.Sleep(10);
     DrawMap();
-    Thread.Sleep(20);
+    Thread.Sleep(10);
 }
 
 void DrawMap()
 {
-    //Console.Clear();
     foreach (var placement in map.PlacedChunks)
     {
         var color = placement.Chunk.Biome switch
@@ -253,8 +270,8 @@ namespace TetrisFill
             // PlacedChunks.Add()
         }
 
-        public List<ChunkPlacement> GetFittingPlacementsForAllChunks(
-            List<Chunk> allChunks,
+        public List<ChunkPlacement> GetFittingPlacementsForChunks(
+            IEnumerable<Chunk> allChunks,
             Coord2D coord
         )
         {
