@@ -2,12 +2,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using TetrisFill;
-
-Console.WriteLine("Hello, World!");
 
 var chunkRegistry = new List<Chunk>(
     [
@@ -104,15 +101,22 @@ var chunkRegistry = new List<Chunk>(
 var map = new Map();
 var rand = new Random();
 
-var spiral = new SpiralWalker(new(0, 0), 14);
-
 var biomeNoise = new FastNoiseLite(rand.Next());
 biomeNoise.SetNoiseType(FastNoiseLite.NoiseType.OpenSimplex2);
 biomeNoise.SetFrequency(0.08f);
 
 Console.Clear();
+
+var spiral = new SpiralWalker(new(0, 0), 14);
 foreach (var placeTarget in spiral)
 {
+    // For this example we have only 3 biomes on a 1-dimensional axis,
+    // so we can pick a biome the 'stupid' way with a few value comparisons.
+    // This method is viable even with a more complex biome map, but if we
+    // end up having more than 2 noise layers we should probably find another method.
+
+    // Basically, zones where the noise is lower than -0.4 become blue,
+    // and zones where it's above 0.4 become red. In the middle we are just green
     var biome = Biome.Green;
     var noiseSample = biomeNoise.GetNoise(placeTarget.X, placeTarget.Z);
     if (noiseSample > 0.4)
