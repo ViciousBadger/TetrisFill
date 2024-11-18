@@ -329,6 +329,11 @@ namespace TetrisFill
             return this;
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this;
+        }
+
         public bool MoveNext()
         {
             var done = _x < -_radius || _x > _radius || _z < -_radius || _x > _radius;
@@ -354,11 +359,6 @@ namespace TetrisFill
             _z = center.Z;
             _dx = 0;
             _dz = -1;
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
         }
     }
 }
